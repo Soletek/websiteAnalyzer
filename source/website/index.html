@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Website status analysis tool</title>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.0/jquery.min.js"></script>
+    <style>
+        body {
+            background-color: #b9b9b9;
+        }
+        #header {
+            font-family: 'DejaVu Sans';
+            font-size: 14px;
+        }
+        table {
+            background-color: #fff;
+            font-family: 'DejaVu Sans';
+            font-size: 12px;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px #747474 dashed;
+            padding-left: 7px;
+        }
+        i {
+            font-family: 'DejaVu Sans';
+            font-size: 10px;
+            color: #777;
+        }
+        h2 {
+            font-family: 'DejaVu Sans';
+            font-size: 12px;
+            font-weight: bold;
+            color: #b00000;
+        }
+        h3 {
+            font-family: 'DejaVu Sans';
+            font-size: 12px;
+            font-weight: bold;
+            color: #009000;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        $(document).ready(function () {
+            $('#data_collection').load('data');
+        });
+            
+        var auto_refresh = setInterval( function () {
+            if (document.getElementById("auto_refresh").checked) {
+                $('#data_collection').load('data').fadeIn('slow');
+            }
+        }, 10000);
+    </script>
+    <div id="header">
+        <h1>Website status analysis tool:</h1>
+        <form action="">
+            <input id="auto_refresh" type="checkbox" name="auto_refresh" value="AutoRefresh">Auto-refresh<br> 
+        </form>
+        <br />
+    </div>
+    <div id="data_collection"></div>
+</body>
+</html>

@@ -1,0 +1,69 @@
+[
+  {
+    "_class_name": "TimedCheck", 
+    "check_predicates": [], 
+    "disable_log": false, 
+    "disable_page_caching": true, 
+    "interval": 30, 
+    "target_url": "https://www.youtube.com"
+  },
+  {
+    "_class_name": "TimedCheck",
+    "check_predicates": [
+      {
+        "_class_name": "TitleCheck",
+        "title": "Google"
+      }
+    ],
+    "disable_log": false,
+    "disable_page_caching": false,
+    "interval": 12,
+    "target_url": "http://www.google.com"
+  },
+  {
+    "_class_name": "TimedCheck", 
+    "check_predicates": [], 
+    "disable_log": false, 
+    "disable_page_caching": false, 
+    "interval": 30, 
+    "target_url": "https://qwerty.asc.def.gg"
+  },
+  {
+    "_class_name": "TimedCheck",
+    "check_predicates": [
+      {
+        "_class_name": "TitleCheck",
+        "title": "Welcome to Python.org"
+      },
+      {
+        "_class_name": "ContainsStringCheck",
+        "phrase": "programming language"
+      }
+    ],
+    "disable_log": true,
+    "disable_page_caching": false,
+    "interval": 15,
+    "target_url": "https://www.python.org"
+  },
+  {
+    "_class_name": "TimedCheck", 
+    "check_predicates": [
+      {
+        "_class_name": "TitleCheck",
+        "title": "Soletek"
+      },
+      {
+        "_class_name": "ContainsStringCheck",
+        "phrase": "5 days"
+      },
+      {
+        "_class_name": "ContainsStringCheck", 
+        "phrase": "0 days"
+      }
+    ], 
+    "disable_log": false, 
+    "disable_page_caching": false, 
+    "interval": 60, 
+    "target_url": "https://github.com/Soletek"
+  }
+]
