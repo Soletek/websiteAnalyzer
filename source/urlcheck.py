@@ -50,9 +50,9 @@ class UrlCheck(object):
 
         try:
             # get the web page and measure latency
-            self.start_time = time.time()
+            self.start_time = time.time()   # get a value in start_time in case urlopen fails
             self.web = urllib.urlopen(self.url)
-            self.start_time = time.time()
+            self.start_time = time.time()   # the real latency measurement start_time
             self.page = self.web.read()
             self.end_time = time.time()
 
@@ -81,36 +81,49 @@ class UrlCheck(object):
 
             # change page encoding to ascii
             self.page = self.page.decode("ascii", "replace")
-
-            # iterate through all check predicates analyzing if page contents fulfills the conditionals
-            page_content_ok = True
-
-            if (len(self.predicates) > 0):
-                for predicate in self.predicates:
-                    check_status = predicate.check_data(self.page)
-                    if not check_status:
-                        self.message = predicate.fail_message()
-                        self.log.write_line (self.message, self.hash)
-                        page_content_ok = False
-
-                if page_content_ok:
-                    self.message = "Check succesful."
-                    self.log.write_line (self.message, self.hash)
-
-            else:
-                self.message = "No content checks exist for this web page."
-                self.log.write_line (self.message, self.hash)
-
-            self.check_status = page_content_ok
+            self.content_check()
+            
 
         self.write_meta()
 
+        # finalize
         self.log.remove_channel(self.hash)
+        self.controller.finalize_check(self)
+        
         return
+
+
+    def content_check(self):
+        page_content_ok = True
+
+        if (len(self.predicates) > 0):
+            # iterate through all check predicates analyzing if page contents fulfills the conditionals
+            for predicate in self.predicates:
+                page_content_ok = page_content_ok and apply_predicate(predicate)
+
+            if page_content_ok:
+                self.message = "Check succesful."
+                self.log.write_line (self.message, self.hash)
+
+        else:
+            self.message = "No content checks exist for this web page."
+            self.log.write_line (self.message, self.hash)
+
+        self.check_status = page_content_ok
+
+
+    def apply_predicate(self, check_predicate):
+        check_status = predicate.check_data(self.page)
+
+        if not check_status:
+            self.message = check_predicate.fail_message()
+            self.log.write_line (self.message, self.hash)
+
+        return check_status
                 
 
     def write_meta(self):
-        """ Writes meta data in file """
+        """ Writes meta data in file to be displayed in a web site """
         
         with open(self.dirname + "\\.meta", "w") as f:
             f.write(self.url + "\n")

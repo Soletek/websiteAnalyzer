@@ -22,7 +22,7 @@ class WebsiteStatusApp(object):
 
     def __init__(self):
         self.logger = Logger()
-        self.readers = []
+        self.active_checks = []
         WebsiteStatusApp.instance = self
 
         return super(WebsiteStatusApp, self).__init__()
@@ -30,32 +30,25 @@ class WebsiteStatusApp(object):
     @classmethod
     def get_instance(cls):
         if (WebsiteStatusApp.instance == None):
-            raise ReferenceError("WebsiteStatusApp not initialized")
+            WebsiteStatusApp.instance = WebsiteStatusApp()
 
         return WebsiteStatusApp.instance
 
     
     def run(self):
 
-        # load setup from config.ini
-        config = ConfigParser()
-        config.read("config\\config.ini")
+        self.load_config()
 
-        self.schedule_file = config.get("checkScheduler", "database")
-        self.server_port = config.getint("HTTPServer", "port")
-        self.log_file = config.get("log", "dir") + "log.txt"
-        self.cache_dir = config.get("log", "pagedir")
-
-        if config.getboolean("configuration", "mainlog"):
+        if self.config.getboolean("configuration", "mainlog"):
             self.logger.add_listener(FileLog(self.log_file).write_line)
         
-        if config.getboolean("configuration", "checkscheduler"):
+        if self.config.getboolean("configuration", "checkscheduler"):
             self.start_check_scheduler()
 
-        if config.getboolean("configuration", "httpserver"):
+        if self.config.getboolean("configuration", "httpserver"):
             self.start_HTTPServer()
         
-        if config.getboolean("configuration", "commandpromt"):
+        if self.config.getboolean("configuration", "commandpromt"):
             self.start_command_prompt()
             
             # wait for console to exit
@@ -70,8 +63,22 @@ class WebsiteStatusApp(object):
 
         return
 
+    def load_config(self):
+        # load setup from config.ini
+
+        self.config = ConfigParser()
+        self.config.read("config\\config.ini")
+
+        self.schedule_file = config.get("checkScheduler", "database")
+        self.server_port = config.getint("HTTPServer", "port")
+        self.log_file = config.get("log", "dir") + "log.txt"
+        self.cache_dir = config.get("log", "pagedir")
+
+        return
+
     def start_command_prompt(self):
         # create a thread for the console interface
+
         self.console_thread = threading.Thread(None, update_console, "console")
         self.console_thread.start()
             
@@ -79,9 +86,11 @@ class WebsiteStatusApp(object):
 
     def start_check_scheduler(self):
         # create a thread for automated url checks
+
         self.scheduler = CheckScheduler(self, self.schedule_file)
         self.check_scheduler_thread = threading.Thread(None, self.scheduler.update, "scheduler")
         self.check_scheduler_thread.start()
+
         return
 
     def stop_check_scheduler(self):
@@ -94,9 +103,11 @@ class WebsiteStatusApp(object):
             
     def start_HTTPServer(self):
         # create a thread for http server interface
+
         self.server = HTTPServer(self, self.server_port)
         self.server_thread = threading.Thread(None, self.server.update, "httpServer")
         self.server_thread.start()
+
         return
 
     def stop_HTTPServer(self):
@@ -110,19 +121,17 @@ class WebsiteStatusApp(object):
     def perform_check(self, check_data):
         # initiates a check on a specific url address,
         # the connection and checks runs on seperate thread
-        self.readers.append(UrlCheck(self, check_data))
+
+        self.active_checks.append(UrlCheck(self, check_data))
+
+        return
 
 
-    def update(self):
-        deleted = []
+    def finalize_check(self, check):
+        self.active_checks.remove(check)
 
-        # remove finished checks from list
-        for check in self.readers:
-            if not check.thread.is_alive():
-                deleted.append(check)
+        return
 
-        for check in deleted:
-            self.readers.remove(check)
 
 
 

@@ -35,9 +35,7 @@ class HTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             print filename
             
             if (not os.path.isfile(filename)) or (self.path.count("/") > 2):
-                self.send_header("Content-type", "text/plain")
-                self.end_headers()
-                self.wfile.writelines("404 NOT FOUND")
+                self.page_not_found()
 
             else:
                 self.send_header("Content-type", "text/plain")
@@ -50,9 +48,7 @@ class HTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             filename = HTTPRequestHandler.controller.cache_dir + self.path.split("/")[-1] + "\\.html"
 
             if (not os.path.isfile(filename)) or (self.path.count("/") > 2):
-                self.send_header("Content-type", "text/plain")
-                self.end_headers()
-                self.wfile.writelines("404 NOT FOUND")
+                self.page_not_found()
 
             else:
                 self.send_header("Content-type", "text/html")
@@ -136,11 +132,17 @@ class HTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.wfile.write("</table>")
         
         else:
-            self.send_header("Content-type", "text/plain")
-            self.end_headers()
-            self.wfile.writelines("404 NOT FOUND")
+            self.page_not_found()
 
         return
+
+    def page_not_found(self):
+        self.send_header("Content-type", "text/plain")
+        self.end_headers()
+        self.wfile.writelines("404 NOT FOUND")
+
+        return
+
 
 
     

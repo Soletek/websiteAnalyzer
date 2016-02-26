@@ -5,7 +5,7 @@ Copyright(c) Tuukka Kurtti 2016
 
 1. Running
 
-Start core.py with Python version 2.7
+Start main.py with Python version 2.7
 (The program is tested with Python 2.7.11)
 
 
